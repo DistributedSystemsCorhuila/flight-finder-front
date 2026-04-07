@@ -1,0 +1,46 @@
+<div class="registro-box">
+  <div class="logo-header">
+    <img src="/assets/LogoAirF.png" alt="Logo de Punto de Pago Air" class="logo-image" />
+  </div>
+  <h2>Registro de Usuario</h2>
+  <form [formGroup]="registroForm" (ngSubmit)="registrarUsuario()">
+    <div class="form-row">
+      <div class="user-box">
+        <input type="text" formControlName="firstName" required />
+        <label>Nombre</label>
+      </div>
+      <div class="user-box">
+        <input type="text" formControlName="lastName" required />
+        <label>Apellido</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="user-box">
+        <input type="text" formControlName="username" required />
+        <label>Usuario</label>
+      </div>
+      <div class="user-box">
+        <input type="email" formControlName="email" required />
+        <label>Email</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="user-box">
+        <input type="password" formControlName="password" required />
+        <label>Contraseña</label>
+      </div>
+      <div class="user-box">
+        <select formControlName="favoriteDestinations" required>
+          <option value="" disabled selected hidden></option>
+          <option value="internacionales">Internacionales</option>
+          <option value="nacionales">Nacionales</option>
+        </select>
+        <label>Destinos favoritos</label>
+      </div>
+    </div>
+    <div class="buttons-container">
+      <button type="button" class="btn" (click)="regresar()">Regresar</button>
+      <button type="submit" class="btn" [disabled]="registroForm.invalid">Registrar</button>
+    </div>
+  </form>
+</div>
