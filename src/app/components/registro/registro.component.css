@@ -1,0 +1,119 @@
+.registro-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 400px;
+  padding: 20px;
+  transform: translate(-50%, -50%);
+  background: rgba(235, 232, 232, 0.7);
+  box-sizing: border-box;
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
+  transition: all 0.3s ease-in-out;
+}
+
+.registro-box:hover {
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.8);
+}
+
+.registro-box h2 {
+  margin: 0 0 20px;
+  padding: 0;
+  color: #126add;
+  text-align: center;
+  font-size: 2em;
+  letter-spacing: 2px;
+}
+
+.registro-box .user-box {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.registro-box .user-box input,
+.registro-box .user-box select {
+  width: 100%;
+  padding: 5px 0;
+  font-size: 16px;
+  color: #126add;
+  margin-bottom: 20px;
+  border: none;
+  border-bottom: 1px solid #126add;
+  outline: none;
+  background: transparent;
+  transition: border-color 0.3s ease;
+}
+
+.registro-box .user-box input:focus,
+.registro-box .user-box select:focus {
+  border-bottom: 1px solid #1dcad3;
+}
+
+.registro-box .user-box label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 5px 0;
+  font-size: 16px;
+  color: #126add;
+  pointer-events: none;
+  transition: 0.5s;
+}
+
+.registro-box .user-box input:focus ~ label,
+.registro-box .user-box input:valid ~ label,
+.registro-box .user-box select:focus ~ label,
+.registro-box .user-box select:valid ~ label {
+  top: -20px;
+  left: 0;
+  color: #1dcad3;
+  font-size: 12px;
+}
+
+.registro-box button {
+  display: block;
+  width: 100%;
+  padding: 8px 15px;
+  font-size: 16px;
+  color: #fff;
+  background: #126add;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.registro-box button:hover {
+  background: #1dcad3;
+  box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
+}
+
+.logo-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.logo-image {
+  max-width: 150px;
+  height: auto;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.buttons-container .btn {
+  flex: 1;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
