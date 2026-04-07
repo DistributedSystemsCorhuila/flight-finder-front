@@ -1,0 +1,59 @@
+<div class="container mt-3 p-5 form-container">
+
+  <h2 class="text-center flex-grow-1">Buscar Vuelos</h2>
+
+  <button class="btn btn-danger position-absolute top-0 end-0" style="margin-right: -90px;"
+    (click)="cerrarSesion()">Cerrar Sesión</button>
+
+  <div class="row mb-4 form-fields">
+    <div class="col-md-4">
+      <label for="origenId">Aeropuerto de Origen:</label>
+      <select [(ngModel)]="origenId" id="origenId" class="form-control">
+        <option *ngFor="let aeropuerto of aeropuertos" [value]="aeropuerto.id">
+          {{ aeropuerto.codigo }} - {{ aeropuerto.nombre }}
+        </option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label for="destinoId">Aeropuerto de Destino:</label>
+      <select [(ngModel)]="destinoId" id="destinoId" class="form-control">
+        <option *ngFor="let aeropuerto of aeropuertos" [value]="aeropuerto.id">
+          {{ aeropuerto.codigo }} - {{ aeropuerto.nombre }}
+        </option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label for="fechaViaje">Fecha de Viaje:</label>
+      <input type="date" id="fechaViaje" [(ngModel)]="fechaViaje" class="form-control">
+    </div>
+  </div>
+  <div class="text-center">
+    <button class="btn buscar-vuelos" (click)="buscarVuelos()">Buscar</button>
+  </div>
+
+  <div class="mt-2" *ngIf="vuelos.length > 0">
+    <h3>Resultados de la Búsqueda</h3>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Origen</th>
+          <th>Destino</th>
+          <th>Fecha de Salida</th>
+          <th>Fecha de Llegada</th>
+          <th>Duración</th>
+          <th>Número de Escalas</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let vuelo of vuelos">
+          <td>{{ getNombreAeropuerto(vuelo.aeropuertoOrigenId) }}</td>
+          <td>{{ getNombreAeropuerto(vuelo.aeropuertoDestinoId) }}</td>
+          <td>{{ vuelo.fechaSalida | date: 'dd/MM/yy, h:mm a' }}</td>
+          <td>{{ vuelo.fechaLlegada | date: 'dd/MM/yy, h:mm a' }}</td>
+          <td>{{ vuelo.duracion }} minutos</td>
+          <td>{{ vuelo.numeroEscalas }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
