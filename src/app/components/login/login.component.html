@@ -1,0 +1,39 @@
+<div class="login-box">
+  <div class="logo-header">
+    <img src="/assets/LogoAirF.png" alt="Logo de Punto de Pago Air" class="logo-image" />
+  </div>
+  <h2>Iniciar Sesión</h2>
+  <form (ngSubmit)="login($event)">
+    <div class="user-box">
+      <input 
+        type="text" 
+        name="username" 
+        [(ngModel)]="loginData.username" 
+        required 
+        (keydown.enter)="login($event)" 
+      />
+      <label>Nombre de usuario</label>
+    </div>
+    <div class="user-box">
+      <input 
+        type="password" 
+        name="password" 
+        [(ngModel)]="loginData.password" 
+        required 
+        (keydown.enter)="login($event)" 
+      />
+      <label>Contraseña</label>
+    </div>
+    <div class="button-container">
+      <a href="#" (click)="login($event)" class="btn-custom">
+        <i class="bi bi-airplane"></i>
+        Iniciar Sesión
+      </a>
+    </div>
+  </form>
+  <div class="register-button">
+    <button class="btn btn-secondary" routerLink="/registro">
+      <i class="bi bi-airplane"></i> Ir al Registro
+    </button>
+  </div>
+</div>

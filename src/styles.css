@@ -1,1 +1,42 @@
-/* You can add global styles to this file, and also import other style files */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-image: url('assets/background1.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: top center;
+  background-color: hwb(210 97% 2%);
+}
+
+/* Pantallas grandes - Desktop (1200px o más) */
+@media (min-width: 1200px) {
+  html, body {
+    background-size: 100% 100%;
+  }
+}
+
+/* Pantallas medianas - Tablet (768px a 1199px) */
+@media (max-width: 1199px) and (min-width: 768px) {
+  html, body {
+    background-size: 100% 100%;
+    background-attachment: scroll;
+  }
+}
+
+/* Pantallas pequeñas - Mobile grande (480px a 767px) */
+@media (max-width: 767px) {
+  html, body {
+    background-size: 100% 100%;
+    background-attachment: scroll;
+  }
+}
+
+/* Pantallas muy pequeñas - Mobile pequeño (menos de 480px) */
+@media (max-width: 480px) {
+  html, body {
+    background-size: 100% 100%;
+    background-attachment: scroll;
+  }
+}
