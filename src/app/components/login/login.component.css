@@ -1,7 +1,6 @@
 
 .logo-header {
   text-align: center;
-  margin-bottom: 20px;
 }
 
 .logo-image {
@@ -125,7 +124,26 @@
 .button-container {
   display: flex;
   justify-content: center;
-  margin: 2px;
+  margin-top: 15px;
+}
+
+.regresar-button {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.regresar-button .btn {
+  color: #fff;
+  background: #007bff;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 2px;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.regresar-button .btn:hover {
+  background: #1dcad3;
+  box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
 }
 .login-box form a {
   position: relative;
@@ -137,7 +155,6 @@
   text-transform: uppercase;
   overflow: hidden;
   transition: background 0.5s, color 0.5s;
-  margin-top: 40px;
   letter-spacing: 4px;
 }
 
@@ -292,8 +309,14 @@
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
+  letter-spacing: 2px;
 }
 
 .btn-secondary i {
   margin-right: 5px;
+}
+
+.register-button .btn:hover {
+  background: #1dcad3;
+  box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
 }
