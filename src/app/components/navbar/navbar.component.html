@@ -1,0 +1,36 @@
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a routerLink="/" class="brand-logo">
+      ✈ Punto Pago Air
+    </a>
+  </div>
+
+  <button class="hamburger" (click)="toggleMenu()" aria-label="Abrir menú">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <ul class="navbar-links" [class.open]="menuOpen">
+    <li>
+      <a routerLink="/home" routerLinkActive="active" (click)="menuOpen = false">
+        Información
+      </a>
+    </li>
+    <li>
+      <a href="#" (click)="menuOpen = false">
+        Centro de ayuda
+      </a>
+    </li>
+    <li>
+      <a href="#" (click)="menuOpen = false">
+        Ayuda
+      </a>
+    </li>
+    <li>
+      <a routerLink="/login" routerLinkActive="active" class="btn-login" (click)="menuOpen = false">
+        Iniciar sesión
+      </a>
+    </li>
+  </ul>
+</nav>
