@@ -1,36 +1,36 @@
 <nav class="navbar">
-  <div class="navbar-brand">
-    <a routerLink="/" class="brand-logo">
-      ✈ Punto Pago Air
-    </a>
+
+  <!-- Left nav links (desktop) -->
+  <div class="nav-group nav-left">
+    <a routerLink="/home" routerLinkActive="active" class="nav-pill">Información</a>
+    <a href="#" class="nav-pill">Centro de ayuda</a>
   </div>
 
+  <!-- Logo center -->
+  <a routerLink="/" class="brand-logo">
+    <img src="assets/LogoAirF.png" alt="Flight Finder" class="brand-img" />
+    <span class="brand-name">Flight Finder</span>
+  </a>
+
+  <!-- Right nav links (desktop) -->
+  <div class="nav-group nav-right">
+    <a href="#" class="nav-pill">Ofertas</a>
+    <a routerLink="/login" class="nav-pill btn-login">Iniciar sesión</a>
+  </div>
+
+  <!-- Hamburger (mobile) -->
   <button class="hamburger" (click)="toggleMenu()" aria-label="Abrir menú">
     <span></span>
     <span></span>
     <span></span>
   </button>
 
-  <ul class="navbar-links" [class.open]="menuOpen">
-    <li>
-      <a routerLink="/home" routerLinkActive="active" (click)="menuOpen = false">
-        Información
-      </a>
-    </li>
-    <li>
-      <a href="#" (click)="menuOpen = false">
-        Centro de ayuda
-      </a>
-    </li>
-    <li>
-      <a href="#" (click)="menuOpen = false">
-        Ayuda
-      </a>
-    </li>
-    <li>
-      <a routerLink="/login" routerLinkActive="active" class="btn-login" (click)="menuOpen = false">
-        Iniciar sesión
-      </a>
-    </li>
-  </ul>
+  <!-- Mobile dropdown -->
+  <div class="mobile-menu" [class.open]="menuOpen">
+    <a routerLink="/home" routerLinkActive="active" (click)="menuOpen=false">Información</a>
+    <a href="#" (click)="menuOpen=false">Centro de ayuda</a>
+    <a href="#" (click)="menuOpen=false">Ayuda</a>
+    <a routerLink="/login" (click)="menuOpen=false" class="btn-login-mobile">Iniciar sesión</a>
+  </div>
+
 </nav>
