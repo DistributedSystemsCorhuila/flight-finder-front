@@ -1,59 +1,152 @@
-<div class="container mt-3 p-5 form-container">
+<!-- ===== PAGE WRAPPER ===== -->
+<div class="bv-page">
 
-  <h2 class="text-center flex-grow-1">Buscar Vuelos</h2>
-
-  <button class="btn btn-danger position-absolute top-0 end-0" style="margin-right: -90px;"
-    (click)="cerrarSesion()">Cerrar Sesión</button>
-
-  <div class="row mb-4 form-fields">
-    <div class="col-md-4">
-      <label for="origenId">Aeropuerto de Origen:</label>
-      <select [(ngModel)]="origenId" id="origenId" class="form-control">
-        <option *ngFor="let aeropuerto of aeropuertos" [value]="aeropuerto.id">
-          {{ aeropuerto.codigo }} - {{ aeropuerto.nombre }}
-        </option>
-      </select>
+  <!-- TOPBAR -->
+  <header class="bv-topbar">
+    <div class="bv-topbar-brand">
+      <img src="/assets/LogoAirF.png" alt="Logo" class="bv-logo" />
+      <span class="bv-brand-name">Punto de Pago Air</span>
     </div>
-    <div class="col-md-4">
-      <label for="destinoId">Aeropuerto de Destino:</label>
-      <select [(ngModel)]="destinoId" id="destinoId" class="form-control">
-        <option *ngFor="let aeropuerto of aeropuertos" [value]="aeropuerto.id">
-          {{ aeropuerto.codigo }} - {{ aeropuerto.nombre }}
-        </option>
-      </select>
+    <button class="bv-logout-btn" (click)="cerrarSesion()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16">
+        <path fill-rule="evenodd"
+          d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+        <path fill-rule="evenodd"
+          d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+      </svg>
+      Cerrar sesión
+    </button>
+  </header>
+
+  <!-- HERO -->
+  <section class="bv-hero">
+    <p class="bv-hero-eye">Explora Colombia desde el aire</p>
+    <h1 class="bv-hero-title">Busca tu vuelo perfecto</h1>
+    <p class="bv-hero-sub">Rutas directas y con escalas en la red Punto de Pago Air</p>
+
+    <!-- SEARCH CARD -->
+    <div class="bv-search-card">
+      <div class="bv-search-card-header">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M6.428 1.151C6.708.591 7.213 0 8 0s1.292.592 1.572 1.151C9.861 1.73 10 2.431 10 3v3.691l5.17 2.585a1.5 1.5 0 0 1 .83 1.342V12a.5.5 0 0 1-.582.493l-5.507-.918-.375 2.253 1.318 1.318A.5.5 0 0 1 10.5 16h-5a.5.5 0 0 1-.354-.854l1.319-1.318-.376-2.253-5.507.918A.5.5 0 0 1 0 12v-1.382a1.5 1.5 0 0 1 .83-1.342L6 6.691V3c0-.569.139-1.27.428-1.849z"/>
+        </svg>
+        Nueva búsqueda
+      </div>
+
+      <div class="bv-form-grid">
+        <!-- Origen -->
+        <div class="bv-field">
+          <label class="bv-label" for="origenId">
+            <span class="bv-dot origin-dot"></span>Origen
+          </label>
+          <div class="bv-select-wrap">
+            <select [(ngModel)]="origenId" id="origenId" class="bv-select">
+              <option [value]="0" disabled>Aeropuerto de origen</option>
+              <option *ngFor="let a of aeropuertos" [value]="a.id">{{ a.codigo }} — {{ a.nombre }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Swap -->
+        <div class="bv-swap-col">
+          <div class="bv-swap-icon">⇄</div>
+        </div>
+
+        <!-- Destino -->
+        <div class="bv-field">
+          <label class="bv-label" for="destinoId">
+            <span class="bv-dot dest-dot"></span>Destino
+          </label>
+          <div class="bv-select-wrap">
+            <select [(ngModel)]="destinoId" id="destinoId" class="bv-select">
+              <option [value]="0" disabled>Aeropuerto de destino</option>
+              <option *ngFor="let a of aeropuertos" [value]="a.id">{{ a.codigo }} — {{ a.nombre }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Fecha -->
+        <div class="bv-field">
+          <label class="bv-label" for="fechaViaje">
+            <span class="bv-dot date-dot"></span>Fecha de viaje
+          </label>
+          <input type="date" id="fechaViaje" [(ngModel)]="fechaViaje" class="bv-input-date" />
+        </div>
+
+        <!-- Botón -->
+        <div class="bv-btn-col">
+          <button class="bv-search-btn" (click)="buscarVuelos()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.44 1.406a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+            </svg>
+            Buscar vuelos
+          </button>
+        </div>
+      </div>
     </div>
-    <div class="col-md-4">
-      <label for="fechaViaje">Fecha de Viaje:</label>
-      <input type="date" id="fechaViaje" [(ngModel)]="fechaViaje" class="form-control">
+  </section>
+
+  <!-- RESULTS -->
+  <section class="bv-results" *ngIf="vuelos.length > 0">
+    <div class="bv-results-header">
+      <h2 class="bv-results-title">
+        {{ vuelos.length }} vuelo{{ vuelos.length !== 1 ? 's' : '' }} encontrado{{ vuelos.length !== 1 ? 's' : '' }}
+      </h2>
+      <p class="bv-results-sub">Ordenados por duración total del viaje</p>
     </div>
-  </div>
-  <div class="text-center">
-    <button class="btn buscar-vuelos" (click)="buscarVuelos()">Buscar</button>
+
+    <div class="bv-cards-grid">
+      <div class="bv-flight-card" *ngFor="let vuelo of vuelos; let i = index"
+        [style.animation-delay]="(i * 80) + 'ms'">
+
+        <!-- Route -->
+        <div class="bv-route-bar">
+          <div class="bv-airport">
+            <span class="bv-iata">{{ getCodigoAeropuerto(vuelo.aeropuertoOrigenId) }}</span>
+            <span class="bv-airport-name">{{ getNombreCorto(vuelo.aeropuertoOrigenId) }}</span>
+          </div>
+          <div class="bv-route-line">
+            <div class="bv-dot-o"></div>
+            <div class="bv-dash-line"></div>
+            <svg class="bv-plane" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M6.428 1.151C6.708.591 7.213 0 8 0s1.292.592 1.572 1.151C9.861 1.73 10 2.431 10 3v3.691l5.17 2.585a1.5 1.5 0 0 1 .83 1.342V12a.5.5 0 0 1-.582.493l-5.507-.918-.375 2.253 1.318 1.318A.5.5 0 0 1 10.5 16h-5a.5.5 0 0 1-.354-.854l1.319-1.318-.376-2.253-5.507.918A.5.5 0 0 1 0 12v-1.382a1.5 1.5 0 0 1 .83-1.342L6 6.691V3c0-.569.139-1.27.428-1.849z"/>
+            </svg>
+            <div class="bv-dash-line"></div>
+            <div class="bv-dot-d"></div>
+          </div>
+          <div class="bv-airport bv-airport-right">
+            <span class="bv-iata">{{ getCodigoAeropuerto(vuelo.aeropuertoDestinoId) }}</span>
+            <span class="bv-airport-name">{{ getNombreCorto(vuelo.aeropuertoDestinoId) }}</span>
+          </div>
+        </div>
+
+        <!-- Times -->
+        <div class="bv-times-row">
+          <div class="bv-time-block">
+            <span class="bv-time">{{ vuelo.fechaSalida | date:'h:mm a' }}</span>
+            <span class="bv-date-tag">{{ vuelo.fechaSalida | date:'dd MMM yyyy' }}</span>
+          </div>
+          <div class="bv-badges">
+            <span class="bv-badge bv-badge-dur">⏱ {{ formatDuracion(vuelo.duracion) }}</span>
+            <span class="bv-badge" [ngClass]="vuelo.numeroEscalas === 0 ? 'bv-badge-direct' : 'bv-badge-stops'">
+              {{ vuelo.numeroEscalas === 0 ? 'Directo' : vuelo.numeroEscalas + ' escala' + (vuelo.numeroEscalas > 1 ? 's' : '') }}
+            </span>
+          </div>
+          <div class="bv-time-block bv-time-right">
+            <span class="bv-time">{{ vuelo.fechaLlegada | date:'h:mm a' }}</span>
+            <span class="bv-date-tag">{{ vuelo.fechaLlegada | date:'dd MMM yyyy' }}</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- EMPTY STATE -->
+  <div class="bv-empty" *ngIf="vuelos.length === 0 && buscado">
+    <div class="bv-empty-icon">✈️</div>
+    <h3>Sin resultados</h3>
+    <p>No encontramos vuelos para la ruta y fecha seleccionadas.</p>
   </div>
 
-  <div class="mt-2" *ngIf="vuelos.length > 0">
-    <h3>Resultados de la Búsqueda</h3>
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Origen</th>
-          <th>Destino</th>
-          <th>Fecha de Salida</th>
-          <th>Fecha de Llegada</th>
-          <th>Duración</th>
-          <th>Número de Escalas</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let vuelo of vuelos">
-          <td>{{ getNombreAeropuerto(vuelo.aeropuertoOrigenId) }}</td>
-          <td>{{ getNombreAeropuerto(vuelo.aeropuertoDestinoId) }}</td>
-          <td>{{ vuelo.fechaSalida | date: 'dd/MM/yy, h:mm a' }}</td>
-          <td>{{ vuelo.fechaLlegada | date: 'dd/MM/yy, h:mm a' }}</td>
-          <td>{{ vuelo.duracion }} minutos</td>
-          <td>{{ vuelo.numeroEscalas }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 </div>

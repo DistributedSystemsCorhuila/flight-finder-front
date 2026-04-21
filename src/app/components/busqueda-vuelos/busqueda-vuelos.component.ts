@@ -21,6 +21,7 @@ export class BusquedaVuelosComponent implements OnInit {
   fechaViaje: string = '';
   vuelos: Vuelo[] = [];
   aeropuertos: Aeropuerto[] = [];
+  buscado: boolean = false;
 
   constructor(
     private aeropuertoService: AeropuertoService,
@@ -50,6 +51,7 @@ export class BusquedaVuelosComponent implements OnInit {
 
         this.vueloService.buscarVuelos(this.origenId, this.destinoId, this.fechaViaje).subscribe(
             (resultados: Vuelo[]) => {
+                this.buscado = true;
                 if (resultados.length > 0) {
                     this.vuelos = resultados;
                     console.log('Resultados de la búsqueda:', resultados);
@@ -91,8 +93,24 @@ export class BusquedaVuelosComponent implements OnInit {
   }
 
   getNombreAeropuerto(id: number): string {
-    const aeropuerto = this.aeropuertos.find(a => a.id === id);
-    return aeropuerto ? `${aeropuerto.nombre} (${aeropuerto.codigo})` : 'Desconocido';
+    const a = this.aeropuertos.find(x => x.id === id);
+    return a ? `${a.nombre} (${a.codigo})` : 'Desconocido';
+  }
+
+  getCodigoAeropuerto(id: number): string {
+    const a = this.aeropuertos.find(x => x.id === id);
+    return a ? a.codigo : '???';
+  }
+
+  getNombreCorto(id: number): string {
+    const a = this.aeropuertos.find(x => x.id === id);
+    return a ? a.nombre : '';
+  }
+
+  formatDuracion(minutos: number): string {
+    const h = Math.floor(minutos / 60);
+    const m = minutos % 60;
+    return h > 0 ? `${h}h ${m}m` : `${m}m`;
   }
 
   cerrarSesion(): void {
