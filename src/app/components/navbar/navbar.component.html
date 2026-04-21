@@ -1,35 +1,30 @@
 <nav class="navbar">
 
-  <!-- Left nav links (desktop) -->
   <div class="nav-group nav-left">
-    <a routerLink="/home" routerLinkActive="active" class="nav-pill">Información</a>
-    <a href="#" class="nav-pill">Centro de ayuda</a>
+    <a [routerLink]="['/home']" fragment="informacion" class="nav-pill">Información</a>
+    <a [routerLink]="['/home']" fragment="ayuda" class="nav-pill">Centro de ayuda</a>
   </div>
 
-  <!-- Logo center -->
-  <a routerLink="/" class="brand-logo">
+  <a routerLink="/home" class="brand-logo">
     <img src="assets/LogoAirF.png" alt="Flight Finder" class="brand-img" />
     <span class="brand-name">Flight Finder</span>
   </a>
 
-  <!-- Right nav links (desktop) -->
   <div class="nav-group nav-right">
-    <a href="#" class="nav-pill">Ofertas</a>
+    <a [routerLink]="['/home']" fragment="ofertas" class="nav-pill">Ofertas</a>
     <a routerLink="/login" class="nav-pill btn-login">Iniciar sesión</a>
   </div>
 
-  <!-- Hamburger (mobile) -->
   <button class="hamburger" (click)="toggleMenu()" aria-label="Abrir menú">
     <span></span>
     <span></span>
     <span></span>
   </button>
 
-  <!-- Mobile dropdown -->
   <div class="mobile-menu" [class.open]="menuOpen">
-    <a routerLink="/home" routerLinkActive="active" (click)="menuOpen=false">Información</a>
-    <a href="#" (click)="menuOpen=false">Centro de ayuda</a>
-    <a href="#" (click)="menuOpen=false">Ayuda</a>
+    <a [routerLink]="['/home']" fragment="informacion" (click)="menuOpen=false">Información</a>
+    <a [routerLink]="['/home']" fragment="ayuda" (click)="menuOpen=false">Centro de ayuda</a>
+    <a [routerLink]="['/home']" fragment="ofertas" (click)="menuOpen=false">Ofertas</a>
     <a routerLink="/login" (click)="menuOpen=false" class="btn-login-mobile">Iniciar sesión</a>
   </div>
 
