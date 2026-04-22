@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router'; 
+import { Router } from '@angular/router';
 import { Vuelo } from '../../models/vuelo.model';
 import { Aeropuerto } from '../../models/aeropuerto.model';
+import { GoogleFlight, GoogleFlightLeg, BookingOptionDetail } from '../../models/google-flight.model';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AeropuertoService } from '../../services/aeropuerto.service';
 import { VueloService } from '../../services/vuelo-service';
+import { GoogleFlightsService, GoogleFlightsResult, BookingResult } from '../../services/google-flights.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -16,85 +18,181 @@ import Swal from 'sweetalert2';
   styleUrls: ['./busqueda-vuelos.component.css']
 })
 export class BusquedaVuelosComponent implements OnInit {
-  origenId: number = 0;
-  destinoId: number = 0;
+
   fechaViaje: string = '';
   vuelos: Vuelo[] = [];
-  aeropuertos: Aeropuerto[] = [];
   buscado: boolean = false;
+
+  // Aeropuertos
+  aeropuertos: Aeropuerto[] = [];
+  aeropuertosFiltradosOrigen: Aeropuerto[] = [];
+  aeropuertosFiltradosDestino: Aeropuerto[] = [];
+  cargandoAeropuertos: boolean = false;
+  cargandoBusquedaOrigen: boolean = false;
+  cargandoBusquedaDestino: boolean = false;
+
+  // Selección
+  origenSeleccionado: Aeropuerto | null = null;
+  destinoSeleccionado: Aeropuerto | null = null;
+
+  // Filtros
+  filtroOrigen: string = '';
+  filtroDestino: string = '';
+  filtroOrigenActivo: boolean = false;
+  filtroDestinoActivo: boolean = false;
+
+  // Google Flights
+  googleVuelos: GoogleFlight[] = [];
+  googleFlightsUrl: string = '';
+  cargandoGoogle: boolean = false;
+  errorGoogle: string = '';
+  sinResultadosGoogle: boolean = false;
+
+  // Parámetros de la última búsqueda (para reusarlos en opciones de compra)
+  private lastDepartureId: string = '';
+  private lastArrivalId: string = '';
+  private lastOutboundDate: string = '';
+
+  // Modal opciones de compra
+  modalAbierto: boolean = false;
+  modalVuelo: GoogleFlight | null = null;
+  modalGoogleFlightsUrl: string = '';
+  opcionesCompra: BookingOptionDetail[] = [];
+  cargandoOpciones: boolean = false;
+  errorOpciones: string = '';
 
   constructor(
     private aeropuertoService: AeropuertoService,
     private vueloService: VueloService,
-    private router: Router 
+    private googleFlightsService: GoogleFlightsService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.cargarAeropuertos();
+    this.aeropuertoService.obtenerAeropuertos().subscribe(lista => {
+      this.aeropuertos = lista;
+      this.aeropuertosFiltradosOrigen = lista;
+      this.aeropuertosFiltradosDestino = lista;
+    });
   }
 
-  cargarAeropuertos(): void {
-    this.aeropuertoService.obtenerAeropuertos().subscribe(
-      (aeropuertos: Aeropuerto[]) => {
-        this.aeropuertos = aeropuertos;
-      },
-      (error) => {
-        console.error('Error al cargar los aeropuertos:', error);
-      }
-    );
-  }
-  buscarVuelos(): void {
-    if (this.origenId && this.destinoId && this.fechaViaje) {
-        console.log('Origen ID:', this.origenId);
-        console.log('Destino ID:', this.destinoId);
-        console.log('Fecha de viaje:', this.fechaViaje);
-
-        this.vueloService.buscarVuelos(this.origenId, this.destinoId, this.fechaViaje).subscribe(
-            (resultados: Vuelo[]) => {
-                this.buscado = true;
-                if (resultados.length > 0) {
-                    this.vuelos = resultados;
-                    console.log('Resultados de la búsqueda:', resultados);
-
-                    Swal.fire({
-                      title: '¡Vuelos encontrados!',
-                      text: 'Hay vuelos disponibles para la ruta y fecha seleccionadas.',
-                      imageUrl: '/assets/disponibles.gif', 
-                      imageWidth: 100,
-                      imageHeight: 100,
-                      imageAlt: 'Vuelos disponibles',
-                      icon: 'success'
-                    });
-                } else {
-                    Swal.fire({
-                      icon: 'info',
-                      title: 'Sin resultados',
-                      text: 'No hay vuelos disponibles para la ruta y fecha seleccionadas.'
-                    });
-                    this.vuelos = [];
-                }
-            },
-            (error) => {
-                console.error('Error al buscar vuelos:', error);
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'Hubo un error al buscar los vuelos. Intente de nuevo más tarde.'
-                });
-            }
-        );
-    } else {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Campos incompletos',
-          text: 'Por favor, complete todos los campos para realizar la búsqueda.'
-        });
+  onFocusOutOrigen(event: FocusEvent): void {
+    const related = event.relatedTarget as HTMLElement;
+    if (!related || !(event.currentTarget as HTMLElement).contains(related)) {
+      setTimeout(() => { this.filtroOrigenActivo = false; }, 100);
     }
   }
 
-  getNombreAeropuerto(id: number): string {
-    const a = this.aeropuertos.find(x => x.id === id);
-    return a ? `${a.nombre} (${a.codigo})` : 'Desconocido';
+  onFocusOutDestino(event: FocusEvent): void {
+    const related = event.relatedTarget as HTMLElement;
+    if (!related || !(event.currentTarget as HTMLElement).contains(related)) {
+      setTimeout(() => { this.filtroDestinoActivo = false; }, 100);
+    }
+  }
+
+  toggleDropdownOrigen(): void {
+    this.filtroDestinoActivo = false;
+    this.filtroOrigenActivo = !this.filtroOrigenActivo;
+    if (this.filtroOrigenActivo) {
+      this.filtroOrigen = '';
+      this.aeropuertosFiltradosOrigen = this.aeropuertos;
+    }
+  }
+
+  cerrarDropdownOrigen(): void {
+    this.filtroOrigenActivo = false;
+  }
+
+  seleccionarOrigen(a: Aeropuerto): void {
+    this.origenSeleccionado = a;
+    this.filtroOrigenActivo = false;
+  }
+
+  toggleDropdownDestino(): void {
+    this.filtroOrigenActivo = false;
+    this.filtroDestinoActivo = !this.filtroDestinoActivo;
+    if (this.filtroDestinoActivo) {
+      this.filtroDestino = '';
+      this.aeropuertosFiltradosDestino = this.aeropuertos;
+    }
+  }
+
+  cerrarDropdownDestino(): void {
+    this.filtroDestinoActivo = false;
+  }
+
+  seleccionarDestino(a: Aeropuerto): void {
+    this.destinoSeleccionado = a;
+    this.filtroDestinoActivo = false;
+  }
+
+  swapAeropuertos(): void {
+    const tmp = this.origenSeleccionado;
+    this.origenSeleccionado = this.destinoSeleccionado;
+    this.destinoSeleccionado = tmp;
+  }
+
+  filtrarOrigen(): void {
+    this.aeropuertoService.buscarAeropuertos(this.filtroOrigen).subscribe(res => {
+      this.aeropuertosFiltradosOrigen = res;
+    });
+  }
+
+  filtrarDestino(): void {
+    this.aeropuertoService.buscarAeropuertos(this.filtroDestino).subscribe(res => {
+      this.aeropuertosFiltradosDestino = res;
+    });
+  }
+
+  buscarVuelos(): void {
+    if (!this.origenSeleccionado || !this.destinoSeleccionado || !this.fechaViaje) {
+      Swal.fire({ icon: 'warning', title: 'Campos incompletos', text: 'Por favor, complete todos los campos para realizar la búsqueda.' });
+      return;
+    }
+
+    const origenCodigo = this.origenSeleccionado.codigo;
+    const destinoCodigo = this.destinoSeleccionado.codigo;
+
+    this.googleVuelos = [];
+    this.errorGoogle = '';
+    this.sinResultadosGoogle = false;
+    this.cargandoGoogle = true;
+    this.buscado = false;
+    this.vuelos = [];
+
+    this.lastDepartureId = origenCodigo;
+    this.lastArrivalId = destinoCodigo;
+    this.lastOutboundDate = this.fechaViaje;
+
+    this.googleFlightsService.buscarVuelos(origenCodigo, destinoCodigo, this.fechaViaje).subscribe({
+      next: (result: GoogleFlightsResult) => {
+        this.googleVuelos = result.vuelos;
+        this.googleFlightsUrl = result.googleFlightsUrl;
+        this.cargandoGoogle = false;
+        this.buscado = true;
+        if (result.vuelos.length > 0) {
+          Swal.fire({
+            title: '¡Vuelos encontrados!',
+            text: `Se encontraron ${result.vuelos.length} vuelo(s) en Google Flights.`,
+            imageUrl: '/assets/disponibles.gif',
+            imageWidth: 100, imageHeight: 100,
+            icon: 'success'
+          });
+        } else {
+          this.sinResultadosGoogle = true;
+        }
+      },
+      error: (err: Error) => {
+        const msg = err.message ?? '';
+        if (msg.toLowerCase().includes("hasn't returned any results") || msg.toLowerCase().includes('fully empty')) {
+          this.sinResultadosGoogle = true;
+        } else {
+          this.errorGoogle = msg || 'No se pudieron cargar vuelos de Google Flights.';
+        }
+        this.cargandoGoogle = false;
+        this.buscado = true;
+      }
+    });
   }
 
   getCodigoAeropuerto(id: number): string {
@@ -113,9 +211,64 @@ export class BusquedaVuelosComponent implements OnInit {
     return h > 0 ? `${h}h ${m}m` : `${m}m`;
   }
 
+  getGoogleFlightFirstLeg(vuelo: GoogleFlight): GoogleFlightLeg | undefined {
+    return vuelo.flights?.[0];
+  }
+
+  getGoogleFlightLastLeg(vuelo: GoogleFlight): GoogleFlightLeg | undefined {
+    return vuelo.flights?.[vuelo.flights.length - 1];
+  }
+
+  getGoogleFlightEscalas(vuelo: GoogleFlight): number {
+    return Math.max(0, (vuelo.flights?.length ?? 1) - 1);
+  }
+
+  abrirOpciones(gv: GoogleFlight): void {
+    if (!gv.booking_token) {
+      window.open(this.googleFlightsUrl, '_blank');
+      return;
+    }
+    this.modalVuelo = gv;
+    this.modalAbierto = true;
+    this.opcionesCompra = [];
+    this.errorOpciones = '';
+    this.cargandoOpciones = true;
+
+    this.googleFlightsService.obtenerOpcionesCompra(
+      gv.booking_token,
+      this.lastDepartureId,
+      this.lastArrivalId,
+      this.lastOutboundDate
+    ).subscribe({
+      next: (opts) => {
+        this.opcionesCompra = opts.opciones;
+        this.cargandoOpciones = false;
+        if (opts.opciones.length === 0) this.errorOpciones = 'No se encontraron opciones de compra.';
+      },
+      error: (err) => {
+        this.errorOpciones = err.message ?? 'Error al cargar opciones.';
+        this.cargandoOpciones = false;
+      }
+    });
+  }
+
+  cerrarModal(): void {
+    this.modalAbierto = false;
+    this.modalVuelo = null;
+    this.opcionesCompra = [];
+  }
+
+  reservar(op: BookingOptionDetail): void {
+    if (op.booking_request) {
+      this.googleFlightsService.abrirReserva(op.booking_request);
+    } else {
+      window.open(this.googleFlightsUrl, '_blank');
+    }
+  }
+
   cerrarSesion(): void {
     localStorage.clear();
     sessionStorage.clear();
-    this.router.navigate(['/login']); 
+    this.router.navigate(['/login']);
   }
 }
