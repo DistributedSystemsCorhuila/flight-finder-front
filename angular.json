@@ -32,6 +32,12 @@
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/app/environment/enviroment.ts",
+                  "with": "src/app/environment/enviroment.main.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
@@ -46,6 +52,17 @@
               ],
               "outputHashing": "all"
             },
+            "qa": {
+              "fileReplacements": [
+                {
+                  "replace": "src/app/environment/enviroment.ts",
+                  "with": "src/app/environment/enviroment.qa.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -56,12 +73,21 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": {
-              "buildTarget": "puntopagoair:build:production"
+              "buildTarget": "puntopagoair:build:production",
+              "proxyConfig": "proxy.conf.main.json"
+            },
+            "qa": {
+              "buildTarget": "puntopagoair:build:qa",
+              "proxyConfig": "proxy.conf.qa.json"
             },
             "development": {
-              "buildTarget": "puntopagoair:build:development"
+              "buildTarget": "puntopagoair:build:development",
+              "proxyConfig": "proxy.conf.dev.json"
             }
           },
           "defaultConfiguration": "development"

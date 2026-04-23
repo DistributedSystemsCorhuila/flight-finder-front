@@ -5,7 +5,7 @@
   <header class="bv-topbar">
     <div class="bv-topbar-brand">
       <img src="/assets/LogoAirF.png" alt="Logo" class="bv-logo" />
-      <span class="bv-brand-name">Punto de Pago Air</span>
+      <span class="bv-brand-name">Flight Finder</span>
     </div>
     <button class="bv-logout-btn" (click)="cerrarSesion()">
       <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16">
@@ -20,9 +20,9 @@
 
   <!-- HERO -->
   <section class="bv-hero">
-    <p class="bv-hero-eye">Explora Colombia desde el aire</p>
+    <p class="bv-hero-eye">Explora desde el aire</p>
     <h1 class="bv-hero-title">Busca tu vuelo perfecto</h1>
-    <p class="bv-hero-sub">Rutas directas y con escalas en la red Punto de Pago Air</p>
+    <p class="bv-hero-sub">Rutas directas y con escalas en la red Flight Finder</p>
 
     <!-- SEARCH CARD -->
     <div class="bv-search-card">
@@ -36,45 +36,93 @@
       <div class="bv-form-grid">
         <!-- Origen -->
         <div class="bv-field">
-          <label class="bv-label" for="origenId">
+          <label class="bv-label">
             <span class="bv-dot origin-dot"></span>Origen
           </label>
-          <div class="bv-select-wrap">
-            <select [(ngModel)]="origenId" id="origenId" class="bv-select">
-              <option [value]="0" disabled>Aeropuerto de origen</option>
-              <option *ngFor="let a of aeropuertos" [value]="a.id">{{ a.codigo }} — {{ a.nombre }}</option>
-            </select>
+          <div class="bv-dropdown-wrap" (focusout)="onFocusOutOrigen($event)">
+            <!-- Trigger -->
+            <button type="button" class="bv-trigger" [class.bv-trigger--active]="filtroOrigenActivo" [class.bv-trigger--selected]="origenSeleccionado" (click)="toggleDropdownOrigen()">
+              <span class="bv-trigger-icon">🛫</span>
+              <span class="bv-trigger-text">
+                {{ origenSeleccionado ? origenSeleccionado.codigo + ' · ' + (origenSeleccionado.ciudad || origenSeleccionado.nombre) : 'Selecciona origen' }}
+              </span>
+              <span class="bv-trigger-arrow" [class.open]="filtroOrigenActivo">▾</span>
+            </button>
+            <!-- Dropdown panel -->
+            <div class="bv-drop-panel" *ngIf="filtroOrigenActivo">
+              <div class="bv-drop-search">
+                <input #inputOrigen type="text" class="bv-drop-input"
+                  placeholder="Nombre, ciudad o IATA..."
+                  [(ngModel)]="filtroOrigen"
+                  (input)="filtrarOrigen()"
+                  autofocus />
+                <span class="bv-drop-icon">🔍</span>
+              </div>
+              <ul class="bv-drop-list">
+                <li class="bv-drop-empty" *ngIf="aeropuertosFiltradosOrigen.length === 0">Sin resultados</li>
+                <li class="bv-drop-item" *ngFor="let a of aeropuertosFiltradosOrigen"
+                  [class.bv-drop-item--sel]="origenSeleccionado?.codigo === a.codigo"
+                  (mousedown)="seleccionarOrigen(a)">
+                  <span class="bv-drop-code">{{ a.codigo }}</span>
+                  <span class="bv-drop-name">{{ a.nombre }}</span>
+                  <span class="bv-drop-pais">{{ a.ciudad }}, {{ a.pais }}</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
         <!-- Swap -->
         <div class="bv-swap-col">
-          <div class="bv-swap-icon">⇄</div>
+          <button type="button" class="bv-swap-icon" (click)="swapAeropuertos()">⇄</button>
         </div>
 
         <!-- Destino -->
         <div class="bv-field">
-          <label class="bv-label" for="destinoId">
+          <label class="bv-label">
             <span class="bv-dot dest-dot"></span>Destino
           </label>
-          <div class="bv-select-wrap">
-            <select [(ngModel)]="destinoId" id="destinoId" class="bv-select">
-              <option [value]="0" disabled>Aeropuerto de destino</option>
-              <option *ngFor="let a of aeropuertos" [value]="a.id">{{ a.codigo }} — {{ a.nombre }}</option>
-            </select>
+          <div class="bv-dropdown-wrap" (focusout)="onFocusOutDestino($event)">
+            <!-- Trigger -->
+            <button type="button" class="bv-trigger" [class.bv-trigger--active]="filtroDestinoActivo" [class.bv-trigger--selected]="destinoSeleccionado" (click)="toggleDropdownDestino()">
+              <span class="bv-trigger-icon">🛬</span>
+              <span class="bv-trigger-text">
+                {{ destinoSeleccionado ? destinoSeleccionado.codigo + ' · ' + (destinoSeleccionado.ciudad || destinoSeleccionado.nombre) : 'Selecciona destino' }}
+              </span>
+              <span class="bv-trigger-arrow" [class.open]="filtroDestinoActivo">▾</span>
+            </button>
+            <!-- Dropdown panel -->
+            <div class="bv-drop-panel" *ngIf="filtroDestinoActivo">
+              <div class="bv-drop-search">
+                <input type="text" class="bv-drop-input"
+                  placeholder="Nombre, ciudad o IATA..."
+                  [(ngModel)]="filtroDestino"
+                  (input)="filtrarDestino()"
+                  autofocus />
+                <span class="bv-drop-icon">🔍</span>
+              </div>
+              <ul class="bv-drop-list">
+                <li class="bv-drop-empty" *ngIf="aeropuertosFiltradosDestino.length === 0">Sin resultados</li>
+                <li class="bv-drop-item" *ngFor="let a of aeropuertosFiltradosDestino"
+                  [class.bv-drop-item--sel]="destinoSeleccionado?.codigo === a.codigo"
+                  (mousedown)="seleccionarDestino(a)">
+                  <span class="bv-drop-code">{{ a.codigo }}</span>
+                  <span class="bv-drop-name">{{ a.nombre }}</span>
+                  <span class="bv-drop-pais">{{ a.ciudad }}, {{ a.pais }}</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
-        <!-- Fecha -->
-        <div class="bv-field">
-          <label class="bv-label" for="fechaViaje">
-            <span class="bv-dot date-dot"></span>Fecha de viaje
-          </label>
-          <input type="date" id="fechaViaje" [(ngModel)]="fechaViaje" class="bv-input-date" />
-        </div>
-
-        <!-- Botón -->
-        <div class="bv-btn-col">
+        <!-- Fecha + Botón -->
+        <div class="bv-side-col">
+          <div class="bv-field" style="flex:1; min-width:130px;">
+            <label class="bv-label" for="fechaViaje">
+              <span class="bv-dot date-dot"></span>Fecha de viaje
+            </label>
+            <input type="date" id="fechaViaje" [(ngModel)]="fechaViaje" class="bv-input-date" />
+          </div>
           <button class="bv-search-btn" (click)="buscarVuelos()">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
               <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.44 1.406a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
@@ -142,11 +190,152 @@
     </div>
   </section>
 
-  <!-- EMPTY STATE -->
-  <div class="bv-empty" *ngIf="vuelos.length === 0 && buscado">
-    <div class="bv-empty-icon">✈️</div>
-    <h3>Sin resultados</h3>
-    <p>No encontramos vuelos para la ruta y fecha seleccionadas.</p>
+
+  <!-- ===== GOOGLE FLIGHTS RESULTS ===== -->
+  <section class="bv-google-section" *ngIf="cargandoGoogle || googleVuelos.length > 0 || errorGoogle || sinResultadosGoogle">
+    <div class="bv-results-header bv-google-header">
+      <p class="bv-results-sub" *ngIf="!cargandoGoogle && googleVuelos.length > 0">
+        {{ googleVuelos.length }} vuelo{{ googleVuelos.length !== 1 ? 's' : '' }} disponible{{ googleVuelos.length !== 1 ? 's' : '' }}
+      </p>
+    </div>
+
+    <!-- Spinner -->
+    <div class="bv-google-loading" *ngIf="cargandoGoogle">
+      <div class="bv-spinner"></div>
+      <p>Consultando Google Flights…</p>
+    </div>
+
+    <!-- Sin resultados -->
+    <div class="bv-google-empty" *ngIf="!cargandoGoogle && sinResultadosGoogle">
+      <div class="bv-google-empty-icon">🔍</div>
+      <h3>Sin vuelos disponibles</h3>
+      <p>Google Flights no encontró vuelos para la ruta <strong>{{ origenSeleccionado?.codigo }} → {{ destinoSeleccionado?.codigo }}</strong> el <strong>{{ fechaViaje }}</strong>.</p>
+      <p class="bv-google-empty-tip">Intenta con otra fecha o aeropuertos cercanos.</p>
+    </div>
+
+    <!-- Error técnico -->
+    <div class="bv-google-error" *ngIf="!cargandoGoogle && errorGoogle">
+      <span>⚠️ {{ errorGoogle }}</span>
+    </div>
+
+    <!-- Cards vuelos encontrados -->
+    <div class="bv-cards-grid" *ngIf="!cargandoGoogle && googleVuelos.length > 0">
+      <div class="bv-flight-card bv-google-card" *ngFor="let gv of googleVuelos; let i = index"
+           [style.animation-delay]="(i * 80) + 'ms'">
+
+        <!-- Airline header -->
+        <div class="bv-google-airline-row">
+          <img *ngIf="gv.airline_logo" [src]="gv.airline_logo" alt="Aerolínea" class="bv-airline-logo" />
+          <span class="bv-airline-name">{{ getGoogleFlightFirstLeg(gv)?.airline }}</span>
+          <span class="bv-flight-number">{{ getGoogleFlightFirstLeg(gv)?.flight_number }}</span>
+        </div>
+
+        <!-- Route -->
+        <div class="bv-route-bar">
+          <div class="bv-airport">
+            <span class="bv-iata">{{ getGoogleFlightFirstLeg(gv)?.departure_airport?.id }}</span>
+            <span class="bv-airport-name">{{ getGoogleFlightFirstLeg(gv)?.departure_airport?.name }}</span>
+          </div>
+          <div class="bv-route-line">
+            <div class="bv-dot-o"></div>
+            <div class="bv-dash-line"></div>
+            <svg class="bv-plane" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M6.428 1.151C6.708.591 7.213 0 8 0s1.292.592 1.572 1.151C9.861 1.73 10 2.431 10 3v3.691l5.17 2.585a1.5 1.5 0 0 1 .83 1.342V12a.5.5 0 0 1-.582.493l-5.507-.918-.375 2.253 1.318 1.318A.5.5 0 0 1 10.5 16h-5a.5.5 0 0 1-.354-.854l1.319-1.318-.376-2.253-5.507.918A.5.5 0 0 1 0 12v-1.382a1.5 1.5 0 0 1 .83-1.342L6 6.691V3c0-.569.139-1.27.428-1.849z"/>
+            </svg>
+            <div class="bv-dash-line"></div>
+            <div class="bv-dot-d"></div>
+          </div>
+          <div class="bv-airport bv-airport-right">
+            <span class="bv-iata">{{ getGoogleFlightLastLeg(gv)?.arrival_airport?.id }}</span>
+            <span class="bv-airport-name">{{ getGoogleFlightLastLeg(gv)?.arrival_airport?.name }}</span>
+          </div>
+        </div>
+
+        <!-- Times -->
+        <div class="bv-times-row">
+          <div class="bv-time-block">
+            <span class="bv-time">{{ getGoogleFlightFirstLeg(gv)?.departure_airport?.time }}</span>
+          </div>
+          <div class="bv-badges">
+            <span class="bv-badge bv-badge-dur">⏱ {{ formatDuracion(gv.total_duration) }}</span>
+            <span class="bv-badge" [ngClass]="getGoogleFlightEscalas(gv) === 0 ? 'bv-badge-direct' : 'bv-badge-stops'">
+              {{ getGoogleFlightEscalas(gv) === 0 ? 'Directo' : getGoogleFlightEscalas(gv) + ' escala' + (getGoogleFlightEscalas(gv) > 1 ? 's' : '') }}
+            </span>
+          </div>
+          <div class="bv-time-block bv-time-right">
+            <span class="bv-time">{{ getGoogleFlightLastLeg(gv)?.arrival_airport?.time }}</span>
+          </div>
+        </div>
+
+        <!-- Price + Booking -->
+        <div class="bv-google-price-row">
+          <div class="bv-price-block">
+            <span class="bv-price-label">Precio estimado</span>
+            <span class="bv-price">{{ gv.price | currency:'COP':'symbol':'1.0-0' }}</span>
+          </div>
+          <a class="bv-book-btn" (click)="abrirOpciones(gv)">
+            🛒 Comprar vuelo
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MODAL OPCIONES DE COMPRA ===== -->
+  <div class="bv-modal-overlay" *ngIf="modalAbierto" (click)="cerrarModal()">
+    <div class="bv-modal" (click)="$event.stopPropagation()">
+
+      <!-- Header -->
+      <div class="bv-modal-header">
+        <img *ngIf="modalVuelo?.airline_logo" [src]="modalVuelo!.airline_logo" alt="Aerolínea" class="bv-modal-logo" />
+        <div class="bv-modal-title-block">
+          <h3 class="bv-modal-title">Opciones de compra</h3>
+          <span class="bv-modal-route">
+            {{ getGoogleFlightFirstLeg(modalVuelo!)?.departure_airport?.id }}
+            →
+            {{ getGoogleFlightLastLeg(modalVuelo!)?.arrival_airport?.id }}
+            · {{ getGoogleFlightFirstLeg(modalVuelo!)?.airline }}
+            {{ getGoogleFlightFirstLeg(modalVuelo!)?.flight_number }}
+          </span>
+        </div>
+        <button class="bv-modal-close" (click)="cerrarModal()">✕</button>
+      </div>
+
+      <!-- Spinner -->
+      <div class="bv-modal-loading" *ngIf="cargandoOpciones">
+        <div class="bv-spinner"></div>
+        <p>Buscando donde comprar…</p>
+      </div>
+
+      <!-- Error -->
+      <div class="bv-modal-error" *ngIf="!cargandoOpciones && errorOpciones">
+        <p>⚠️ {{ errorOpciones }}</p>
+        <a [href]="googleFlightsUrl" target="_blank" class="bv-book-btn" style="margin-top:12px; display:inline-flex;">
+          Ver en Google Flights
+        </a>
+      </div>
+
+      <!-- Opciones -->
+      <ul class="bv-modal-list" *ngIf="!cargandoOpciones && opcionesCompra.length > 0">
+        <li class="bv-modal-option" *ngFor="let op of opcionesCompra">
+          <div class="bv-modal-option-info">
+            <img *ngIf="op.airline_logos?.[0]" [src]="op.airline_logos![0]" class="bv-modal-option-logo" />
+            <div>
+              <span class="bv-modal-option-name">{{ op.book_with }}</span>
+              <span class="bv-modal-option-flight" *ngIf="op.marketed_as?.length">{{ op.marketed_as!.join(', ') }}</span>
+            </div>
+          </div>
+          <div class="bv-modal-option-right">
+            <span class="bv-modal-option-price">{{ op.price | currency:'COP':'symbol':'1.0-0' }}</span>
+            <button class="bv-book-btn bv-book-btn--sm" (click)="reservar(op)">
+              Comprar →
+            </button>
+          </div>
+        </li>
+      </ul>
+
+    </div>
   </div>
 
 </div>
