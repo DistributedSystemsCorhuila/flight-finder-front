@@ -1,0 +1,23 @@
+{
+  "/api": {
+    "target": "http://localhost:8081",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/ninjas": {
+    "target": "https://api.api-ninjas.com",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/ninjas": ""
+    }
+  },
+  "/serpapi": {
+    "target": "https://serpapi.com",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/serpapi": ""
+    }
+  }
+}
