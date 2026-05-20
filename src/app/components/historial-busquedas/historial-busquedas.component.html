@@ -1,0 +1,76 @@
+<app-navbar></app-navbar>
+
+<div class="historial-container">
+  <div class="historial-header">
+    <h1> Historial de Búsquedas</h1>
+    <p class="subtitle">Tus vuelos más buscados</p>
+  </div>
+
+  <!-- Mensaje de carga -->
+  <div *ngIf="cargando" class="loading">
+    <div class="spinner"></div>
+    <p>Cargando historial...</p>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="error && !cargando" class="error-message">
+    <p>⚠️ {{ error }}</p>
+  </div>
+
+  <!-- Lista vacía -->
+  <div *ngIf="!cargando && busquedas.length === 0 && !error" class="empty-state">
+    <p>No hay búsquedas registradas</p>
+    <small>Tus búsquedas de vuelos aparecerán aquí</small>
+  </div>
+
+  <!-- Lista de búsquedas -->
+  <div *ngIf="!cargando && busquedas.length > 0" class="busquedas-grid">
+    <div *ngFor="let busqueda of busquedas" class="card-busqueda">
+      <div class="card-header">
+        <div class="ruta">
+          <span class="aeropuerto origen">{{ busqueda.origin }}</span>
+          <span class="arrow">✈️</span>
+          <span class="aeropuerto destino">{{ busqueda.destination }}</span>
+        </div>
+        <span class="tipo-busqueda">{{ getTipoBusqueda(busqueda.type) }}</span>
+      </div>
+
+      <div class="card-body">
+        <div class="info-row">
+          <span class="label">Salida:</span>
+          <span class="value">{{ busqueda.departure_date }}</span>
+        </div>
+
+        <div *ngIf="busqueda.return_date" class="info-row">
+          <span class="label">Regreso:</span>
+          <span class="value">{{ busqueda.return_date }}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="label">Pasajeros:</span>
+          <span class="value">{{ busqueda.adults }} adulto(s)</span>
+        </div>
+
+        <div class="info-row">
+          <span class="label">Clase:</span>
+          <span class="value cabin-badge">{{ busqueda.cabin_class }}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="label">Motor:</span>
+          <span class="value">{{ busqueda.engine }}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="label">Moneda:</span>
+          <span class="value">{{ busqueda.currency }}</span>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <span class="timestamp">🕐 {{ formatearFecha(busqueda.searched_at) }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+

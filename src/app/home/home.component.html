@@ -10,7 +10,10 @@
       busca itinerarios por fecha y organiza los resultados por duración total del viaje.
     </p>
     <div class="hero-actions">
-      <button class="primary-btn" routerLink="/login">Buscar vuelos</button>
+      <button class="primary-btn" [class.plane-fly]="planeAnimating" (click)="irABuscarVuelos()">
+        <span class="btn-text">Buscar vuelos</span>
+        <span class="btn-plane">✈️</span>
+      </button>
       <a class="secondary-btn" href="#ofertas">Ver rutas destacadas</a>
     </div>
   </div>
@@ -98,7 +101,10 @@
     </div>
 
     <div class="about-actions">
-      <button class="primary-btn" routerLink="/login">Explorar vuelos</button>
+      <button class="primary-btn" [class.plane-fly]="planeAnimating" (click)="irABuscarVuelos()">
+        <span class="btn-text">Explorar vuelos</span>
+        <span class="btn-plane">✈️</span>
+      </button>
     </div>
   </div>
 </section>

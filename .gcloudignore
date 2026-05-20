@@ -1,0 +1,25 @@
+# .gcloudignore
+# Archivos y directorios que Google Cloud debe ignorar durante el despliegue
+
+node_modules/
+npm-debug.log
+dist/
+.git/
+.gitignore
+.angular/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+coverage/
+.karma/
+.nyc_output/
+e2e/
+.npmrc
+README.md
+**/*.spec.ts
+karma.conf.js
+tsconfig.spec.json
+

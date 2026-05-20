@@ -1,0 +1,270 @@
+.historial-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 30px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.historial-header {
+  text-align: center;
+  color: white;
+  margin-bottom: 40px;
+}
+
+.historial-header h1 {
+  font-size: 2.5rem;
+  margin: 0;
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  margin: 10px 0 0 0;
+  opacity: 0.9;
+}
+
+/* Estado de carga */
+.loading {
+  text-align: center;
+  color: white;
+  padding: 60px 20px;
+}
+
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Mensaje de error */
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Estado vacío */
+.empty-state {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px dashed rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  padding: 60px 20px;
+  text-align: center;
+  color: white;
+}
+
+.empty-state p {
+  font-size: 1.5rem;
+  margin: 0 0 10px 0;
+  font-weight: 600;
+}
+
+.empty-state small {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+/* Grid de búsquedas */
+.busquedas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Tarjeta de búsqueda */
+.card-busqueda {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-busqueda:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ruta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.aeropuerto {
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  font-size: 1.1rem;
+}
+
+.arrow {
+  font-size: 1.5rem;
+}
+
+.tipo-busqueda {
+  background: rgba(255, 255, 255, 0.3);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.card-body {
+  padding: 20px;
+  flex: 1;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.info-row:last-child {
+  margin-bottom: 0;
+}
+
+.label {
+  font-weight: 600;
+  color: #667eea;
+}
+
+.value {
+  color: #333;
+  text-align: right;
+}
+
+.cabin-badge {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.card-footer {
+  background: #f5f5f5;
+  padding: 12px 20px;
+  border-top: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+.timestamp {
+  color: #666;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .historial-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .busquedas-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .ruta {
+    flex-direction: column;
+  }
+
+  .info-row {
+    flex-direction: column;
+    text-align: left;
+  }
+
+  .value {
+    text-align: left;
+    margin-top: 3px;
+  }
+
+  .tipo-busqueda {
+    align-self: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .historial-container {
+    padding: 15px 10px;
+  }
+
+  .historial-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .busquedas-grid {
+    gap: 15px;
+  }
+
+  .card-busqueda {
+    border-radius: 8px;
+  }
+
+  .card-header {
+    padding: 15px;
+  }
+
+  .card-body {
+    padding: 15px;
+  }
+
+  .ruta {
+    gap: 8px;
+  }
+
+  .aeropuerto {
+    font-size: 0.95rem;
+    padding: 4px 8px;
+  }
+
+  .arrow {
+    font-size: 1.2rem;
+  }
+}
+

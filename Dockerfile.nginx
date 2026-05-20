@@ -1,0 +1,40 @@
+# Stage 1: Build
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copiar archivos de configuración
+COPY package.json package-lock.json ./
+
+# Instalar dependencias
+RUN npm install
+
+# Copiar el código fuente
+COPY . .
+
+# Argumento para el ambiente (dev, qa, main)
+ARG ENVIRONMENT=main
+
+# Construir la aplicación según el ambiente
+RUN npm run build -- --configuration=${ENVIRONMENT}
+
+# Stage 2: Serve with Nginx
+FROM nginx:alpine
+
+# Copiar configuración de nginx
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copiar los archivos compilados desde el stage anterior a la raíz de documentos de Nginx
+# Angular 17 compila en dist/[project]/browser/
+COPY --from=builder /app/dist/puntopagoair/browser /usr/share/nginx/html
+
+# Exponer puerto
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD wget --quiet --tries=1 --spider http://localhost:8080 || exit 1
+
+# Comando para iniciar nginx
+CMD ["nginx", "-g", "daemon off;"]
+
