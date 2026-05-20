@@ -1,6 +1,6 @@
 export const environment = {
     production: false,
-    apiBaseUrl: '/api',
+    apiBaseUrl: 'https://flight-finder-backend-dev-183022784926.us-central1.run.app/api',
     // Clave gratuita de https://api-ninjas.com/
     ninjasApiKey: 'n9Pyk3jWMomrIkgh09q2FJOkDnIVs1fJe1VgZfjr',
     // Clave gratuita de https://serpapi.com/
