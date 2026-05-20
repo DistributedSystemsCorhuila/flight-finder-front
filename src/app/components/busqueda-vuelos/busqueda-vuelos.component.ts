@@ -8,12 +8,14 @@ import { CommonModule } from '@angular/common';
 import { AeropuertoService } from '../../services/aeropuerto.service';
 import { VueloService } from '../../services/vuelo-service';
 import { GoogleFlightsService, GoogleFlightsResult, BookingResult } from '../../services/google-flights.service';
+import { BusquedaHistoricaService } from '../../services/busqueda-historica.service';
+import { NavbarComponent } from '../navbar/navbar.component';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-busqueda-vuelos',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, NavbarComponent],
   templateUrl: './busqueda-vuelos.component.html',
   styleUrls: ['./busqueda-vuelos.component.css']
 })
@@ -61,12 +63,13 @@ export class BusquedaVuelosComponent implements OnInit {
   cargandoOpciones: boolean = false;
   errorOpciones: string = '';
 
-  constructor(
-    private aeropuertoService: AeropuertoService,
-    private vueloService: VueloService,
-    private googleFlightsService: GoogleFlightsService,
-    private router: Router
-  ) {}
+   constructor(
+     private aeropuertoService: AeropuertoService,
+     private vueloService: VueloService,
+     private googleFlightsService: GoogleFlightsService,
+     private busquedaHistoricaService: BusquedaHistoricaService,
+     private router: Router
+   ) {}
 
   ngOnInit(): void {
     this.aeropuertoService.obtenerAeropuertos().subscribe(lista => {
@@ -144,56 +147,89 @@ export class BusquedaVuelosComponent implements OnInit {
     });
   }
 
-  buscarVuelos(): void {
-    if (!this.origenSeleccionado || !this.destinoSeleccionado || !this.fechaViaje) {
-      Swal.fire({ icon: 'warning', title: 'Campos incompletos', text: 'Por favor, complete todos los campos para realizar la búsqueda.' });
-      return;
-    }
+   buscarVuelos(): void {
+     if (!this.origenSeleccionado || !this.destinoSeleccionado || !this.fechaViaje) {
+       Swal.fire({ icon: 'warning', title: 'Campos incompletos', text: 'Por favor, complete todos los campos para realizar la búsqueda.' });
+       return;
+     }
 
-    const origenCodigo = this.origenSeleccionado.codigo;
-    const destinoCodigo = this.destinoSeleccionado.codigo;
+     const origenCodigo = this.origenSeleccionado.codigo;
+     const destinoCodigo = this.destinoSeleccionado.codigo;
 
-    this.googleVuelos = [];
-    this.errorGoogle = '';
-    this.sinResultadosGoogle = false;
-    this.cargandoGoogle = true;
-    this.buscado = false;
-    this.vuelos = [];
+     this.googleVuelos = [];
+     this.errorGoogle = '';
+     this.sinResultadosGoogle = false;
+     this.cargandoGoogle = true;
+     this.buscado = false;
+     this.vuelos = [];
 
-    this.lastDepartureId = origenCodigo;
-    this.lastArrivalId = destinoCodigo;
-    this.lastOutboundDate = this.fechaViaje;
+     this.lastDepartureId = origenCodigo;
+     this.lastArrivalId = destinoCodigo;
+     this.lastOutboundDate = this.fechaViaje;
 
-    this.googleFlightsService.buscarVuelos(origenCodigo, destinoCodigo, this.fechaViaje).subscribe({
-      next: (result: GoogleFlightsResult) => {
-        this.googleVuelos = result.vuelos;
-        this.googleFlightsUrl = result.googleFlightsUrl;
-        this.cargandoGoogle = false;
-        this.buscado = true;
-        if (result.vuelos.length > 0) {
-          Swal.fire({
-            title: '¡Vuelos encontrados!',
-            text: `Se encontraron ${result.vuelos.length} vuelo(s) en Google Flights.`,
-            imageUrl: '/assets/disponibles.gif',
-            imageWidth: 100, imageHeight: 100,
-            icon: 'success'
-          });
-        } else {
-          this.sinResultadosGoogle = true;
-        }
-      },
-      error: (err: Error) => {
-        const msg = err.message ?? '';
-        if (msg.toLowerCase().includes("hasn't returned any results") || msg.toLowerCase().includes('fully empty')) {
-          this.sinResultadosGoogle = true;
-        } else {
-          this.errorGoogle = msg || 'No se pudieron cargar vuelos de Google Flights.';
-        }
-        this.cargandoGoogle = false;
-        this.buscado = true;
-      }
-    });
-  }
+     this.googleFlightsService.buscarVuelos(origenCodigo, destinoCodigo, this.fechaViaje).subscribe({
+       next: (result: GoogleFlightsResult) => {
+         this.googleVuelos = result.vuelos;
+         this.googleFlightsUrl = result.googleFlightsUrl;
+         this.cargandoGoogle = false;
+         this.buscado = true;
+
+         // Guardar búsqueda en el historial
+         this.guardarBusquedaHistorial(origenCodigo, destinoCodigo);
+
+         if (result.vuelos.length > 0) {
+           Swal.fire({
+             title: '¡Vuelos encontrados!',
+             text: `Se encontraron ${result.vuelos.length} vuelo(s) en Google Flights.`,
+             imageUrl: '/assets/disponibles.gif',
+             imageWidth: 100, imageHeight: 100,
+             icon: 'success'
+           });
+         } else {
+           this.sinResultadosGoogle = true;
+         }
+       },
+       error: (err: Error) => {
+         const msg = err.message ?? '';
+         if (msg.toLowerCase().includes("hasn't returned any results") || msg.toLowerCase().includes('fully empty')) {
+           this.sinResultadosGoogle = true;
+         } else {
+           this.errorGoogle = msg || 'No se pudieron cargar vuelos de Google Flights.';
+         }
+         this.cargandoGoogle = false;
+         this.buscado = true;
+       }
+     });
+   }
+
+   guardarBusquedaHistorial(origenCodigo: string, destinoCodigo: string): void {
+     const usuario = localStorage.getItem('usuario');
+     if (!usuario) return;
+
+     const datosBusqueda = {
+       username: usuario,
+       engine: 'google_flights',
+       departure_id: origenCodigo,
+       arrival_id: destinoCodigo,
+       outbound_date: this.fechaViaje,
+       return_date: null,
+       type: 2,
+       currency: 'COP',
+       hl: 'es',
+       gl: 'co',
+       adults: 1,
+       cabin_class: 'economy'
+     };
+
+     this.busquedaHistoricaService.guardarBusqueda(datosBusqueda).subscribe({
+       next: () => {
+         console.log('Búsqueda guardada en el historial');
+       },
+       error: (err) => {
+         console.warn('Error al guardar búsqueda en historial:', err);
+       }
+     });
+   }
 
   getCodigoAeropuerto(id: number): string {
     const a = this.aeropuertos.find(x => x.id === id);

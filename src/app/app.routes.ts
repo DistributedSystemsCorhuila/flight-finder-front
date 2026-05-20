@@ -4,6 +4,7 @@ import { BusquedaVuelosComponent } from './components/busqueda-vuelos/busqueda-v
 import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './home/home.component';
 import { AuthGuard } from './components/guards/auth.guard';
+import { HistorialBusquedasComponent } from './components/historial-busquedas/historial-busquedas.component';
 
 export const routes: Routes = [
   {
@@ -17,6 +18,9 @@ export const routes: Routes = [
   },
   {
     path: 'busqueda-vuelos', component: BusquedaVuelosComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'historial-busquedas', component: HistorialBusquedasComponent, canActivate: [AuthGuard]
   },
   {
     path: 'registro', component: RegistroComponent

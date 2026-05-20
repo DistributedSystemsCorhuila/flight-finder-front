@@ -31,9 +31,9 @@ export class LoginComponent implements OnInit {
 
   login(event?: Event): void {
     if (event) {
-      event.preventDefault(); 
+      event.preventDefault();
     }
-  
+
     if (this.loginData.username && this.loginData.password) {
       console.log('Enviando datos de inicio de sesión:', this.loginData);
       this.usuarioService.iniciarSesion(this.loginData).subscribe(
@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit {
           localStorage.setItem('usuario', this.loginData.username);
           this.isLoggedIn = true;
           this.loginData.password = '';
-  
+
           Swal.fire({
             title: '¡Bienvenido!',
             text: 'Inicio de sesión exitoso',
@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit {
             timer: 1500,
             position: 'center',
           }).then(() => {
-            this.router.navigate(['/busqueda-vuelos']);
+            this.router.navigate(['/home']);
           });
         },
         (error) => {
@@ -95,7 +95,7 @@ export class LoginComponent implements OnInit {
       });
     }
   }
-  
+
 
   logout(): void {
     localStorage.removeItem('usuario');
