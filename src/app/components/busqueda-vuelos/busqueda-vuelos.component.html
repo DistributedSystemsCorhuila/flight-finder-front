@@ -101,21 +101,27 @@
           </div>
         </div>
 
-        <!-- Fecha + Botón -->
-        <div class="bv-side-col">
-          <div class="bv-field" style="flex:1; min-width:130px;">
-            <label class="bv-label" for="fechaViaje">
-              <span class="bv-dot date-dot"></span>Fecha de viaje
-            </label>
-            <input type="date" id="fechaViaje" [(ngModel)]="fechaViaje" class="bv-input-date" />
-          </div>
-          <button class="bv-search-btn" (click)="buscarVuelos()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.44 1.406a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
-            </svg>
-            Buscar vuelos
-          </button>
-        </div>
+         <!-- Fecha + Botón -->
+         <div class="bv-side-col">
+           <div class="bv-field" style="flex:1; min-width:130px;">
+             <label class="bv-label" for="fechaViaje">
+               <span class="bv-dot date-dot"></span>Ida
+             </label>
+             <input type="date" id="fechaViaje" [(ngModel)]="fechaViaje" [min]="fechaMinima" class="bv-input-date" />
+           </div>
+           <div class="bv-field" style="flex:1; min-width:130px;">
+             <label class="bv-label" for="fechaRetorno">
+               <span class="bv-dot date-dot"></span>Vuelta (Opcional)
+             </label>
+             <input type="date" id="fechaRetorno" [(ngModel)]="fechaRetorno" [min]="fechaMinima" class="bv-input-date" />
+           </div>
+           <button class="bv-search-btn" (click)="buscarVuelos()">
+             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+               <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.44 1.406a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+             </svg>
+             Buscar vuelos
+           </button>
+         </div>
       </div>
     </div>
   </section>
@@ -209,12 +215,14 @@
       <div class="bv-flight-card bv-google-card" *ngFor="let gv of googleVuelos; let i = index"
            [style.animation-delay]="(i * 80) + 'ms'">
 
-        <!-- Airline header -->
-        <div class="bv-google-airline-row">
-          <img *ngIf="gv.airline_logo" [src]="gv.airline_logo" alt="Aerolínea" class="bv-airline-logo" />
-          <span class="bv-airline-name">{{ getGoogleFlightFirstLeg(gv)?.airline }}</span>
-          <span class="bv-flight-number">{{ getGoogleFlightFirstLeg(gv)?.flight_number }}</span>
-        </div>
+         <!-- Airline header -->
+         <div class="bv-google-airline-row">
+           <img *ngIf="gv.airline_logo" [src]="gv.airline_logo" alt="Aerolínea" class="bv-airline-logo" />
+           <div class="bv-airline-info">
+             <span class="bv-airline-name">{{ getGoogleFlightFirstLeg(gv)?.airline }}</span>
+             <span class="bv-flight-number">{{ getGoogleFlightFirstLeg(gv)?.flight_number }}</span>
+           </div>
+         </div>
 
         <!-- Route -->
         <div class="bv-route-bar">
@@ -253,16 +261,16 @@
           </div>
         </div>
 
-        <!-- Price + Booking -->
-        <div class="bv-google-price-row">
-          <div class="bv-price-block">
-            <span class="bv-price-label">Precio estimado</span>
-            <span class="bv-price">{{ gv.price | currency:'COP':'symbol':'1.0-0' }}</span>
-          </div>
-          <a class="bv-book-btn" (click)="abrirOpciones(gv)">
-            🛒 Comprar vuelo
-          </a>
-        </div>
+         <!-- Price + Booking -->
+         <div class="bv-google-price-row">
+           <div class="bv-price-block">
+             <span class="bv-price-label">Precio estimado</span>
+             <span class="bv-price">{{ getFormattedPrice(gv.price, gv.currency) }}</span>
+           </div>
+           <a class="bv-book-btn" (click)="abrirOpciones(gv)">
+             🛒 Comprar vuelo
+           </a>
+         </div>
 
       </div>
     </div>

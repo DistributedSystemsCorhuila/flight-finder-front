@@ -11,6 +11,47 @@ export interface GoogleFlightLeg {
   extensions?: string[];
 }
 
+// New model to support backend API response with segments
+export interface FlightSegment {
+  id?: number | null;
+  segmentOrder: number;
+  flightNumber: string;
+  airline: string;
+  airlineLogo?: string;
+  airplane: string;
+  travelClass: string;
+  departureAirportCode: string;
+  departureAirportName: string;
+  arrivalAirportCode: string;
+  arrivalAirportName: string;
+  departureTime: string;
+  arrivalTime: string;
+  duration: number;
+  delayed: boolean;
+}
+
+export interface FlightLayover {
+  id?: number | null;
+  duration: number;
+  airportCode: string;
+  airportName: string;
+}
+
+// New model to support backend API response
+export interface BackendFlight {
+  id?: number | null;
+  totalDuration: number;
+  totalStops: number;
+  price: number;
+  currency: string;
+  tripType: string;
+  carbonEmission: number;
+  bookingToken: string;
+  airlineLogo?: string;
+  segments: FlightSegment[];
+  layovers: FlightLayover[];
+}
+
 export interface BookingRequest {
   url: string;
   post_data: string;
@@ -53,6 +94,7 @@ export interface GoogleFlight {
     difference_percent: number;
   };
   price: number;
+  currency?: string;
   type: string;
   airline_logo: string;
   departure_token?: string;

@@ -806,20 +806,30 @@
   padding: 2px 4px;
 }
 
-.bv-airline-name {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: rgba(255,255,255,0.9);
+.bv-airline-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
 }
 
-.bv-flight-number {
-  margin-left: auto;
-  font-size: 0.78rem;
-  color: rgba(255,255,255,0.5);
-  background: rgba(255,255,255,0.08);
-  padding: 2px 8px;
-  border-radius: 20px;
-}
+.bv-airline-name {
+   font-size: 0.95rem;
+   font-weight: 700;
+   color: #0d2b6b;
+   letter-spacing: 0.02em;
+ }
+
+ .bv-flight-number {
+   margin-left: auto;
+   font-size: 0.78rem;
+   color: rgba(255,255,255,0.6);
+   background: rgba(255,255,255,0.08);
+   padding: 2px 8px;
+   border-radius: 20px;
+   display: inline-flex;
+   width: fit-content;
+ }
 
 /* Price row */
 .bv-google-price-row {

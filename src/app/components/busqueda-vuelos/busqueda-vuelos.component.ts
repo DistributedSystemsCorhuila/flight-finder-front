@@ -22,6 +22,8 @@ import Swal from 'sweetalert2';
 export class BusquedaVuelosComponent implements OnInit {
 
   fechaViaje: string = '';
+  fechaRetorno: string = '';
+  fechaMinima: string = '';
   vuelos: Vuelo[] = [];
   buscado: boolean = false;
 
@@ -54,6 +56,7 @@ export class BusquedaVuelosComponent implements OnInit {
   private lastDepartureId: string = '';
   private lastArrivalId: string = '';
   private lastOutboundDate: string = '';
+  private lastReturnDate: string = '';
 
   // Modal opciones de compra
   modalAbierto: boolean = false;
@@ -72,6 +75,10 @@ export class BusquedaVuelosComponent implements OnInit {
    ) {}
 
   ngOnInit(): void {
+    // Establecer la fecha mínima como hoy
+    const hoy = new Date();
+    this.fechaMinima = hoy.toISOString().split('T')[0];
+
     this.aeropuertoService.obtenerAeropuertos().subscribe(lista => {
       this.aeropuertos = lista;
       this.aeropuertosFiltradosOrigen = lista;
@@ -147,89 +154,90 @@ export class BusquedaVuelosComponent implements OnInit {
     });
   }
 
-   buscarVuelos(): void {
-     if (!this.origenSeleccionado || !this.destinoSeleccionado || !this.fechaViaje) {
-       Swal.fire({ icon: 'warning', title: 'Campos incompletos', text: 'Por favor, complete todos los campos para realizar la búsqueda.' });
-       return;
-     }
+    buscarVuelos(): void {
+      if (!this.origenSeleccionado || !this.destinoSeleccionado || !this.fechaViaje) {
+        Swal.fire({ icon: 'warning', title: 'Campos incompletos', text: 'Por favor, complete todos los campos para realizar la búsqueda.' });
+        return;
+      }
 
-     const origenCodigo = this.origenSeleccionado.codigo;
-     const destinoCodigo = this.destinoSeleccionado.codigo;
+      const origenCodigo = this.origenSeleccionado.codigo;
+      const destinoCodigo = this.destinoSeleccionado.codigo;
 
-     this.googleVuelos = [];
-     this.errorGoogle = '';
-     this.sinResultadosGoogle = false;
-     this.cargandoGoogle = true;
-     this.buscado = false;
-     this.vuelos = [];
+      this.googleVuelos = [];
+      this.errorGoogle = '';
+      this.sinResultadosGoogle = false;
+      this.cargandoGoogle = true;
+      this.buscado = false;
+      this.vuelos = [];
 
-     this.lastDepartureId = origenCodigo;
-     this.lastArrivalId = destinoCodigo;
-     this.lastOutboundDate = this.fechaViaje;
+      this.lastDepartureId = origenCodigo;
+      this.lastArrivalId = destinoCodigo;
+      this.lastOutboundDate = this.fechaViaje;
+      this.lastReturnDate = this.fechaRetorno;
 
-     this.googleFlightsService.buscarVuelos(origenCodigo, destinoCodigo, this.fechaViaje).subscribe({
-       next: (result: GoogleFlightsResult) => {
-         this.googleVuelos = result.vuelos;
-         this.googleFlightsUrl = result.googleFlightsUrl;
-         this.cargandoGoogle = false;
-         this.buscado = true;
+      this.googleFlightsService.buscarVuelos(origenCodigo, destinoCodigo, this.fechaViaje, this.fechaRetorno).subscribe({
+        next: (result: GoogleFlightsResult) => {
+          this.googleVuelos = result.vuelos;
+          this.googleFlightsUrl = result.googleFlightsUrl;
+          this.cargandoGoogle = false;
+          this.buscado = true;
 
-         // Guardar búsqueda en el historial
-         this.guardarBusquedaHistorial(origenCodigo, destinoCodigo);
+          // Guardar búsqueda en el historial
+          this.guardarBusquedaHistorial(origenCodigo, destinoCodigo);
 
-         if (result.vuelos.length > 0) {
-           Swal.fire({
-             title: '¡Vuelos encontrados!',
-             text: `Se encontraron ${result.vuelos.length} vuelo(s) en Google Flights.`,
-             imageUrl: '/assets/disponibles.gif',
-             imageWidth: 100, imageHeight: 100,
-             icon: 'success'
-           });
-         } else {
-           this.sinResultadosGoogle = true;
-         }
-       },
-       error: (err: Error) => {
-         const msg = err.message ?? '';
-         if (msg.toLowerCase().includes("hasn't returned any results") || msg.toLowerCase().includes('fully empty')) {
-           this.sinResultadosGoogle = true;
-         } else {
-           this.errorGoogle = msg || 'No se pudieron cargar vuelos de Google Flights.';
-         }
-         this.cargandoGoogle = false;
-         this.buscado = true;
-       }
-     });
-   }
+          if (result.vuelos.length > 0) {
+            Swal.fire({
+              title: '¡Vuelos encontrados!',
+              text: `Se encontraron ${result.vuelos.length} vuelo(s) en Google Flights.`,
+              imageUrl: '/assets/disponibles.gif',
+              imageWidth: 100, imageHeight: 100,
+              icon: 'success'
+            });
+          } else {
+            this.sinResultadosGoogle = true;
+          }
+        },
+        error: (err: Error) => {
+          const msg = err.message ?? '';
+          if (msg.toLowerCase().includes("hasn't returned any results") || msg.toLowerCase().includes('fully empty')) {
+            this.sinResultadosGoogle = true;
+          } else {
+            this.errorGoogle = msg || 'No se pudieron cargar vuelos de Google Flights.';
+          }
+          this.cargandoGoogle = false;
+          this.buscado = true;
+        }
+      });
+    }
 
-   guardarBusquedaHistorial(origenCodigo: string, destinoCodigo: string): void {
-     const usuario = localStorage.getItem('usuario');
-     if (!usuario) return;
+    guardarBusquedaHistorial(origenCodigo: string, destinoCodigo: string): void {
+      const usuario = localStorage.getItem('usuario');
+      if (!usuario) return;
 
-     const datosBusqueda = {
-       username: usuario,
-       engine: 'google_flights',
-       departure_id: origenCodigo,
-       arrival_id: destinoCodigo,
-       outbound_date: this.fechaViaje,
-       return_date: null,
-       type: 2,
-       currency: 'COP',
-       hl: 'es',
-       gl: 'co',
-       adults: 1,
-       cabin_class: 'economy'
-     };
+      const datosBusqueda = {
+        username: usuario,
+        engine: 'google_flights',
+        departure_id: origenCodigo,
+        arrival_id: destinoCodigo,
+        outbound_date: this.fechaViaje,
+        return_date: this.fechaRetorno || null,
+        type: 2,
+        currency: 'COP',
+        hl: 'es',
+        gl: 'co',
+        adults: 1,
+        cabin_class: 'economy'
+      };
 
-     this.busquedaHistoricaService.guardarBusqueda(datosBusqueda).subscribe({
-       next: () => {
-         console.log('Búsqueda guardada en el historial');
-       },
-       error: (err) => {
-         console.warn('Error al guardar búsqueda en historial:', err);
-       }
-     });
-   }
+      this.busquedaHistoricaService.guardarBusqueda(datosBusqueda).subscribe({
+        next: () => {
+          console.log('Búsqueda guardada en el historial');
+        },
+        error: (err) => {
+          console.warn('Error al guardar búsqueda en historial:', err);
+        }
+      });
+    }
 
   getCodigoAeropuerto(id: number): string {
     const a = this.aeropuertos.find(x => x.id === id);
@@ -259,34 +267,66 @@ export class BusquedaVuelosComponent implements OnInit {
     return Math.max(0, (vuelo.flights?.length ?? 1) - 1);
   }
 
-  abrirOpciones(gv: GoogleFlight): void {
-    if (!gv.booking_token) {
-      window.open(this.googleFlightsUrl, '_blank');
-      return;
-    }
-    this.modalVuelo = gv;
-    this.modalAbierto = true;
-    this.opcionesCompra = [];
-    this.errorOpciones = '';
-    this.cargandoOpciones = true;
-
-    this.googleFlightsService.obtenerOpcionesCompra(
-      gv.booking_token,
-      this.lastDepartureId,
-      this.lastArrivalId,
-      this.lastOutboundDate
-    ).subscribe({
-      next: (opts) => {
-        this.opcionesCompra = opts.opciones;
-        this.cargandoOpciones = false;
-        if (opts.opciones.length === 0) this.errorOpciones = 'No se encontraron opciones de compra.';
-      },
-      error: (err) => {
-        this.errorOpciones = err.message ?? 'Error al cargar opciones.';
-        this.cargandoOpciones = false;
-      }
-    });
+  getGoogleFlightAirlineList(vuelo: GoogleFlight): string {
+    if (!vuelo.flights || vuelo.flights.length === 0) return '';
+    // Obtener las aerolíneas únicas del vuelo
+    const airlines = new Set(vuelo.flights.map(f => f.airline).filter(a => a));
+    return Array.from(airlines).join(' / ');
   }
+
+  getFormattedPrice(price: number, currency?: string): string {
+    // Tasa de conversión USD a COP (aproximadamente)
+    const USD_TO_COP_RATE = 4000;
+
+    // Si la moneda es USD, convertir a COP
+    if (currency === 'USD') {
+      const copPrice = price * USD_TO_COP_RATE;
+      return new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(copPrice);
+    }
+
+    // Si ya es COP o no hay moneda especificada, formatear como COP
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(price);
+  }
+
+   abrirOpciones(gv: GoogleFlight): void {
+     if (!gv.booking_token) {
+       window.open(this.googleFlightsUrl, '_blank');
+       return;
+     }
+     this.modalVuelo = gv;
+     this.modalAbierto = true;
+     this.opcionesCompra = [];
+     this.errorOpciones = '';
+     this.cargandoOpciones = true;
+
+     this.googleFlightsService.obtenerOpcionesCompra(
+       gv.booking_token,
+       this.lastDepartureId,
+       this.lastArrivalId,
+       this.lastOutboundDate,
+       this.lastReturnDate
+     ).subscribe({
+       next: (opts) => {
+         this.opcionesCompra = opts.opciones;
+         this.cargandoOpciones = false;
+         if (opts.opciones.length === 0) this.errorOpciones = 'No se encontraron opciones de compra.';
+       },
+       error: (err) => {
+         this.errorOpciones = err.message ?? 'Error al cargar opciones.';
+         this.cargandoOpciones = false;
+       }
+     });
+   }
 
   cerrarModal(): void {
     this.modalAbierto = false;
